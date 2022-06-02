@@ -1,0 +1,18 @@
+@relation Exemplo1-weka.filters.unsupervised.attribute.Remove-R1-weka.filters.supervised.instance.Resample-B0.0-S1-Z70.0-no-replacement
+
+@attribute Outlook {Sunny,Overcast,Rain}
+@attribute Temperature {Hot,Mild,Cool}
+@attribute Humidity {High,Normal}
+@attribute Wind {Weak,Strong}
+@attribute PlayTennis {No,Yes}
+
+@data
+Sunny,Hot,High,Strong,No
+Rain,Mild,High,Strong,No
+Sunny,Hot,High,Weak,No
+Overcast,Cool,Normal,Strong,Yes
+Overcast,Mild,High,Strong,Yes
+Rain,Cool,Normal,Weak,Yes
+Overcast,Hot,Normal,Weak,Yes
+Rain,Mild,High,Weak,Yes
+Sunny,Mild,Normal,Strong,Yes

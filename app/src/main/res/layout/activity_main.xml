@@ -21,6 +21,13 @@
         android:onClick="wekaClassify"
         android:text="Classify" />
 
+    <Button
+        android:id="@+id/button3"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:onClick="wekaClassifyFromModel"
+        android:text="Load Binary Model" />
+
     <TextView
         android:id="@+id/textView"
         android:layout_width="match_parent"

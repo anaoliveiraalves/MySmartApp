@@ -9,6 +9,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.BufferedReader;
+import java.io.IOException;
 import java.io.StringReader;
 import java.util.Random;
 
@@ -31,6 +32,10 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         tv = findViewById(R.id.tv);
         et = findViewById(R.id.editTextTextPersonName);
+
+
+    }
+    public void wekaTrain(View view){
         try {
             ds = new DataSource(getAssets().open("pasture.arff"));
             insts = ds.getDataSet();
@@ -38,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
             // For example, the XRFF format saves the class attribute information as well
             if (insts.classIndex() == -1)
                 insts.setClassIndex(insts.numAttributes() - 1);
+
             // create new instance of scheme
             scheme = new weka.classifiers.trees.RandomForest();
             // set options
@@ -45,16 +51,7 @@ public class MainActivity extends AppCompatActivity {
             scheme.buildClassifier(insts);
             eval = new Evaluation(insts);
             eval.crossValidateModel(scheme, insts, 10, new Random(1));
-
-        }catch (Exception e){
-            Toast.makeText(getApplicationContext(),"An exception ocurred OnCreate()!", Toast.LENGTH_LONG).show();
-        }
-
-
-    }
-    public void wekaTrain(View view){
-        try {
-        tv.setText(eval.toSummaryString("\nResults\n======\n", false));
+            tv.setText(eval.toSummaryString("\nResults\n======\n", false));
         }catch (Exception e){
             Toast.makeText(getApplicationContext(),"An exception ocurred()!", Toast.LENGTH_LONG).show();
         }
@@ -71,6 +68,45 @@ public class MainActivity extends AppCompatActivity {
             Instances unlabeledData = new Instances(
                 new BufferedReader(new StringReader(arffString.toString())));
             unlabeledData.setClassIndex(insts.numAttributes() - 1);
+            double pred = scheme.classifyInstance(unlabeledData.instance(0));
+            //get the name of the class value
+            String prediction=insts.classAttribute().value((int)pred);
+            tv.setText("The predicted value of instance "+prediction);
+        }catch (Exception e){
+            Toast.makeText(getApplicationContext(),"An exception ocurred()!", Toast.LENGTH_LONG).show();
+        }
+    }
+    public void wekaClassifyFromModel(View view){
+        try {
+            scheme = (RandomForest) weka.core.SerializationHelper.read(getAssets().open("RandomForest_Ex1_weka3." +
+                    "7.model"));
+            Toast.makeText(this, "Model loaded.", Toast.LENGTH_SHORT).show();
+            ds = new DataSource(getAssets().open("Exemplo1_train.arff"));
+            insts = ds.getDataSet();
+            // setting class attribute if the data format does not provide this information
+            // For example, the XRFF format saves the class attribute information as well
+            if (insts.classIndex() == -1)
+                insts.setClassIndex(insts.numAttributes() - 1);
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            // Weka "catch'em all!"
+            e.printStackTrace();
+        }
+
+
+        StringBuilder arffString = new StringBuilder();
+        arffString.append("@relation Exemplo1-weka.filters.unsupervised.attribute.Remove-R1-weka.filters.supervised.instance.Resample-B0.0-S1-Z70.0-no-replacement-V\n\n");
+        arffString.append("@attribute Outlook {Sunny,Overcast,Rain}\n" +
+                "@attribute Temperature {Hot,Mild,Cool}\n" +
+                "@attribute Humidity {High,Normal}\n" +
+                "@attribute Wind {Weak,Strong}\n" +
+                "@attribute PlayTennis {No,Yes}");
+        arffString.append("\n\n@data\n" + et.getText() +  ",?\n");
+        try {
+            Instances unlabeledData = new Instances(
+                    new BufferedReader(new StringReader(arffString.toString())));
+            unlabeledData.setClassIndex(4);
             double pred = scheme.classifyInstance(unlabeledData.instance(0));
             //get the name of the class value
             String prediction=insts.classAttribute().value((int)pred);
